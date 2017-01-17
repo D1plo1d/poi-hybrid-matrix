@@ -1,6 +1,6 @@
 console.log('wat')
 
-const canvas = document.createElement("canvas")
+const canvas = document.getElementById("canvas")
 
 const armLength = 50
 const tetherLength = 50
@@ -57,7 +57,6 @@ const center = {
 canvas.width = center.x * 2
 canvas.height = center.y * 2
 const ctx = canvas.getContext("2d")
-document.body.appendChild(canvas)
 
 const drawSinglePosition = (time, {
   inspin,
