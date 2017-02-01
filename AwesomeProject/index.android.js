@@ -15,7 +15,7 @@ import {
   Switch,
   Picker,
 } from 'react-native';
-
+import ModalPicker from 'react-native-modal-picker'
 import CanvasRenderer from './canvas_renderer'
 
 const debugHTML = false
@@ -86,15 +86,14 @@ export default class AwesomeProject extends Component {
             {k: 'rightPattern', title: 'Right Hand'},
           ].map(({k, title}) =>
             <View key={k}>
+              <Text style={styles.settingsHeader}>
+                {title}
+              </Text>
+              {/* Antispin */}
               <View style={styles.settingsRow}>
-                <Text style={styles.settingsHeader}>
-                  {title}
-                </Text>
-              </View>
-              <View style={styles.settingsRow}>
-                <Text style={styles.settingsLabel}>
-                  Antispin
-                </Text>
+                <View style={styles.settingsLabelContainer}>
+                  <Text style={styles.settingsLabel}>Antispin</Text>
+                </View>
                 <Switch
                   style={styles.settingsControl}
                   onValueChange={(antispin) => this.setState({
@@ -106,29 +105,39 @@ export default class AwesomeProject extends Component {
                   value={this.state[k].antispin}
                 />
               </View>
-
+              {/* Flower Petals */}
               <View style={styles.settingsRow}>
-                <Picker
+                <ModalPicker
                   style={styles.settingsControl}
-                  onValueChange={(petals) => this.setState({
+                  onChange={(option) => this.setState({
                     [k]: {
                       ...this.state[k],
-                      petals,
+                      petals: option.key,
                     },
                   })}
-                  selectedValue={this.state[k].petals}
+                  initValue="Petals"
+                  data={
+                    [
+                      ...(this.state[k].antispin ? [] : [1, 2]),
+                      3, 4, 5, 6, 7, 8
+                    ].map(i => ({
+                      label: `${i} Petal`,
+                      key: i,
+                      section: this.state[k].petals === i
+                    }))
+                  }
                 >
-                  {[
-                    ...(this.state[k].antispin ? [] : [1, 2]), 3, 4, 5, 6, 7, 8
-                  ].map(i =>
-                    <Picker.Item
-                      label={`${i} Petal`}
-                      key={i.toString()}
-                      value={i}
-                    />
-                  )}
-                </Picker>
+                  <View style={styles.picker}>
+                    <Text style={styles.settingsLabel}>
+                      Flower
+                    </Text>
+                    <Text style={styles.pickerValue}>
+                      {this.state[k].petals} Petal
+                    </Text>
+                  </View>
+                </ModalPicker>
               </View>
+              {/* End of settings */}
             </View>
           )}
         </View>
@@ -156,17 +165,38 @@ const styles = StyleSheet.create({
   },
   settingsRow: {
     flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    alignItems: 'center',
+    height: 30,
   },
   settingsControl: {
     flex: 1,
   },
+  settingsLabelContainer: {
+    flexGrow: 1,
+    flexDirection: "column",
+  },
   settingsLabel: {
-    flexGrow: 1
+    color: "#333",
+    fontSize: 11,
+  },
+  settingsDescription: {
+    color: "#999",
+    fontSize: 9,
   },
   settingsHeader: {
-    fontSize: 20,
+    fontSize: 9,
+    color: "rgb(0, 148, 133)",
     marginTop: 10,
-    marginBottom: 10,
+    marginBottom: 5,
+  },
+  picker: {
+    flexDirection: "column",
+  },
+  pickerValue: {
+    color: "#999",
+    fontSize: 10,
   },
   instructions: {
     textAlign: 'center',
