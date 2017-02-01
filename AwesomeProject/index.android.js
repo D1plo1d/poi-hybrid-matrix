@@ -4,7 +4,7 @@
  * @flow
  */
 
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
   AppRegistry,
   StyleSheet,
@@ -14,9 +14,11 @@ import {
   WebView,
   Switch,
   Picker,
+  TouchableHighlight,
 } from 'react-native';
 import ModalPicker from 'react-native-modal-picker'
-import CanvasRenderer from './canvas_renderer'
+import NativePicker from './src/native_picker'
+import CanvasRenderer from './src/canvas_renderer'
 
 const debugHTML = false
 
@@ -89,6 +91,32 @@ export default class AwesomeProject extends Component {
               <Text style={styles.settingsHeader}>
                 {title}
               </Text>
+              {/* Flower Petals */}
+              <NativePicker
+                title="Flower"
+                value={this.state[k].petals}
+                description={
+                  `${this.state[k].petals} Petal ${
+                    this.state[k].antispin ? 'Antispin' : 'Inspin'
+                  }`
+                }
+                onValueChange={(petals) => this.setState({
+                  [k]: {
+                    ...this.state[k],
+                    petals,
+                  },
+                })}
+                data={
+                  [
+                    ...(this.state[k].antispin ? [] : [1, 2]),
+                    3, 4, 5, 6, 7, 8
+                  ].map(i => ({
+                    label: `${i} Petals`,
+                    key: i,
+                    section: this.state[k].petals === i
+                  }))
+                }
+              />
               {/* Antispin */}
               <View style={styles.settingsRow}>
                 <View style={styles.settingsLabelContainer}>
@@ -104,38 +132,6 @@ export default class AwesomeProject extends Component {
                   })}
                   value={this.state[k].antispin}
                 />
-              </View>
-              {/* Flower Petals */}
-              <View style={styles.settingsRow}>
-                <ModalPicker
-                  style={styles.settingsControl}
-                  onChange={(option) => this.setState({
-                    [k]: {
-                      ...this.state[k],
-                      petals: option.key,
-                    },
-                  })}
-                  initValue="Petals"
-                  data={
-                    [
-                      ...(this.state[k].antispin ? [] : [1, 2]),
-                      3, 4, 5, 6, 7, 8
-                    ].map(i => ({
-                      label: `${i} Petal`,
-                      key: i,
-                      section: this.state[k].petals === i
-                    }))
-                  }
-                >
-                  <View style={styles.picker}>
-                    <Text style={styles.settingsLabel}>
-                      Flower
-                    </Text>
-                    <Text style={styles.pickerValue}>
-                      {this.state[k].petals} Petal
-                    </Text>
-                  </View>
-                </ModalPicker>
               </View>
               {/* End of settings */}
             </View>
@@ -168,7 +164,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
     alignItems: 'center',
-    height: 30,
+    height: 50,
+    paddingLeft: 10,
   },
   settingsControl: {
     flex: 1,
@@ -179,17 +176,17 @@ const styles = StyleSheet.create({
   },
   settingsLabel: {
     color: "#333",
-    fontSize: 11,
+    // fontSize: 11,
   },
   settingsDescription: {
     color: "#999",
-    fontSize: 9,
+    fontSize: 11,
   },
   settingsHeader: {
-    fontSize: 9,
+    fontSize: 11,
     color: "rgb(0, 148, 133)",
-    marginTop: 10,
-    marginBottom: 5,
+    marginTop: 15,
+    paddingLeft: 10,
   },
   picker: {
     flexDirection: "column",
