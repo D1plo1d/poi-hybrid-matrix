@@ -9,80 +9,71 @@ import {
   AppRegistry,
   StyleSheet,
   View,
-  WebView,
+  Navigator,
+  Text,
+  TouchableHighlight,
 } from 'react-native'
-import ModalPicker from 'react-native-modal-picker'
-import NativePicker from './src/native_picker'
-import RendererWebView from './src/renderer_web_view'
-import PatternForm from './src/pattern_form'
+import DashboardScreen from './src/dashboard_screen'
+import EditScreen from './src/edit_screen'
+import ViewScreen from './src/view_screen'
 
 export default class AwesomeProject extends Component {
-  state = {
-    // oppositeDirections: true,
-    splitTime: true,
-    leftPattern: {
-      antispin: false,
-      petals: 3,
-    },
-    rightPattern: {
-      antispin: false,
-      petals: 3,
-    },
-  }
-
   render() {
+    const routes = {
+      dashboard: {title: 'Dashboard'},
+      edit: {title: 'Edit'},
+      random: {title: 'Random'},
+    }
     return (
-      <View style={styles.container}>
-        <RendererWebView
-          {...this.state}
-          style={styles.webview}
-        />
-        <View style={styles.settings}>
-          {/*
-          <View style={styles.settingsRow}>
-            <Text style={styles.settingsLabel}>
-              Split Time
-            </Text>
-            <Switch
-              style={styles.settingsControl}
-              onValueChange={(splitTime) => this.setState({splitTime})}
-              value={this.state.splitTime}
-            />
+      <Navigator
+        initialRoute={{screen: "dashboard"}}
+        navigationBar={
+          <Navigator.NavigationBar
+            routeMapper={{
+              LeftButton: (route, navigator, index, navState) =>
+                {
+                  if (route.screen === 'dasboard') {
+                    return null
+                  } else {
+                    return (
+                      <TouchableHighlight onPress={() => navigator.pop()}>
+                        <Text>Back</Text>
+                      </TouchableHighlight>
+                    );
+                  }
+                },
+              RightButton: (route, navigator, index, navState) =>
+                { return null },
+              Title: (route, navigator, index, navState) =>
+                { return (<Text>{routes[route.screen].title}</Text>) },
+            }}
+            style={{backgroundColor: 'gray'}}
+          />
+        }
+        renderScene={(route, navigator) => (
+          <View style={styles.container}>
+            {(route.screen === 'dashboard') ?
+              <DashboardScreen navigator={navigator}/>
+              :
+              null
+            }
+            {(route.screen === 'edit') ? <EditScreen/> : null}
+            {(route.screen === 'random') ? <ViewScreen/> : null}
           </View>
-          */}
-          {[
-            {k: 'leftPattern', title: 'Left Hand'},
-            {k: 'rightPattern', title: 'Right Hand'},
-          ].map(({k, title}) =>
-            <PatternForm
-              key={k}
-              title={title}
-              pattern={this.state[k]}
-              onPatternChange={(pattern) => this.setState({[k]: pattern})}
-            />
-          )}
-        </View>
-      </View>
+        )}
+      />
     )
   }
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    marginTop: 60,
     alignItems: 'stretch',
     alignSelf: "stretch",
-    flexDirection: "row",
-  },
-  webview: {
-    margin: 0,
-    alignSelf: "stretch",
-    flex: 1,
-  },
-  settings: {
     flexDirection: "column",
-    flex: 1,
   },
 })
 
