@@ -1,12 +1,15 @@
-export default ({canvas, leftPattern, rightPattern}) => {
-  // const armLength = 50
-  // const tetherLength = 50
-  // const ballRadius = 6
+export default ({
+  canvas,
+  leftPattern,
+  rightPattern,
+  trailLength,
+  trailResolution,
+  decayLinearity,
+  showArms,
+}) => {
   const ballRadiusPercent = 1.5
   const armWidthPercent = 1
   const tetherWidthPercent = 0.5
-  const trailLength = Math.PI * 2/3
-  const decayLinearity = 2
 
   let measurements = null
 
@@ -95,12 +98,18 @@ export default ({canvas, leftPattern, rightPattern}) => {
     ctx.stroke()
   }
 
+  let previousTime = 0
   const self = (time) => {
+    previousTime = time
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     // Trails
-    for (let i = 0; i < trailLength; i += 0.01) {
-      const opacity = Math.pow((trailLength - i) * 0.6 / trailLength, decayLinearity)
+    for (let i = 0; i < trailLength; i += trailResolution) {
+      const opacity = (
+        decayLinearity > 0 ?
+          Math.pow((trailLength - i) * 0.6 / trailLength, decayLinearity)
+        : 1
+      )
       // Left arm
       ctx.strokeStyle = `rgba(171, 0, 171, ${opacity})`
       drawSinglePosition(time - i, self.leftPattern)
@@ -109,20 +118,22 @@ export default ({canvas, leftPattern, rightPattern}) => {
       drawSinglePosition(time - i, self.rightPattern)
     }
 
-    // Arms
-    ctx.strokeStyle = `rgba(100, 100, 100, 1.0)`
-    drawArm(time, self.leftPattern)
-    drawArm(time, self.rightPattern)
+    if (showArms) {
+      // Arms
+      ctx.strokeStyle = `rgba(100, 100, 100, 1.0)`
+      drawArm(time, self.leftPattern)
+      drawArm(time, self.rightPattern)
 
-    // Tethers
-    ctx.strokeStyle = `rgba(150, 150, 150, 1.0)`
-    drawTether(time, self.leftPattern)
-    drawTether(time, self.rightPattern)
+      // Tethers
+      ctx.strokeStyle = `rgba(150, 150, 150, 1.0)`
+      drawTether(time, self.leftPattern)
+      drawTether(time, self.rightPattern)
 
-    // Hands
-    ctx.strokeStyle = `rgba(100, 100, 100, 1.0)`
-    drawHand(time, self.leftPattern)
-    drawHand(time, self.rightPattern)
+      // Hands
+      ctx.strokeStyle = `rgba(100, 100, 100, 1.0)`
+      drawHand(time, self.leftPattern)
+      drawHand(time, self.rightPattern)
+    }
 
   }
   self.leftPattern = leftPattern
@@ -131,6 +142,7 @@ export default ({canvas, leftPattern, rightPattern}) => {
   self.onResize = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     scale()
+    self.render(previousTime)
   }
   self.render = self
 
