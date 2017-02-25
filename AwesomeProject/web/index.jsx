@@ -81,7 +81,7 @@ class TimeSliderFlowDiagram extends React.Component {
             }}
           >
             <i
-              className={`fa ${this.state.paused ? 'fa-pause' : 'fa-play'}`}
+              className={`fa ${this.state.paused ? 'fa-play' : 'fa-pause'}`}
             />
           </div>
           <input
