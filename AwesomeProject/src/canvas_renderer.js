@@ -5,7 +5,7 @@ export default ({canvas, leftPattern, rightPattern}) => {
   const ballRadiusPercent = 1.5
   const armWidthPercent = 1
   const tetherWidthPercent = 0.5
-  const trailLength = Math.PI * 2
+  const trailLength = Math.PI * 2/3
   const decayLinearity = 2
 
   let measurements = null
@@ -23,8 +23,8 @@ export default ({canvas, leftPattern, rightPattern}) => {
     measurements = {
       ballRadius,
       armLength,
-      armWidth: minDimension * armWidthPercent / 100,
-      tetherWidth: minDimension * tetherWidthPercent / 100,
+      armWidth: Math.min(3, minDimension * armWidthPercent / 100),
+      tetherWidth: Math.min(3, minDimension * tetherWidthPercent / 100),
       tetherLength: armLength,
       center: {
         x: width / 2,
