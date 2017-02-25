@@ -23,8 +23,8 @@ export default ({canvas, leftPattern, rightPattern}) => {
     measurements = {
       ballRadius,
       armLength,
-      armWidth: Math.min(3, minDimension * armWidthPercent / 100),
-      tetherWidth: Math.min(3, minDimension * tetherWidthPercent / 100),
+      armWidth: Math.max(2, minDimension * armWidthPercent / 100),
+      tetherWidth: Math.max(1, minDimension * tetherWidthPercent / 100),
       tetherLength: armLength,
       center: {
         x: width / 2,
