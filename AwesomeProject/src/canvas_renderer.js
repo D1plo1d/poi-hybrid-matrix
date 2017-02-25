@@ -1,15 +1,14 @@
-export default () => {
-  const canvas = document.getElementById("canvas")
-
-
+export default (canvas) => {
   // const armLength = 50
   // const tetherLength = 50
   // const ballRadius = 6
   const ballRadiusPercent = 1.5
+  const armWidthPercent = 1
+  const tetherWidthPercent = 0.5
   const trailLength = Math.PI * 2
   const decayLinearity = 2
 
-  let ballRadius, armLength, tetherLength, width, height
+  let ballRadius, armLength, tetherLength, width, height, armWidth, tetherWidth
   let center
 
   const scale = () => {
@@ -19,6 +18,8 @@ export default () => {
 
     ballRadius = minDimension * ballRadiusPercent / 100
     armLength = minDimension / 4 - ballRadius
+    armWidth = minDimension * armWidthPercent / 100
+    tetherWidth = minDimension * tetherWidthPercent / 100
     tetherLength = armLength
     center = {
       x: width / 2,
@@ -38,6 +39,7 @@ export default () => {
     position = 'bottom',
     boxPattern = false,
     offset = 0,
+    forward = true,
   }) => {
     let ratio
     if (inspin == false) {
@@ -66,27 +68,48 @@ export default () => {
     return {
       inspin,
       ratio,
+      forward,
       offset: offset + (invert ? Math.PI : 0),
     }
   }
 
   const ctx = canvas.getContext("2d")
 
-  const drawSinglePosition = (time, {
+  const handPosition = (time, {
     inspin,
     ratio,
     offset,
+    forward,
   }) => {
+    const radians = (forward ? 1 : -1) * time
     const x = (
-      Math.cos(time) * armLength +
-      (inspin ? 1 : -1) * Math.cos(time * ratio + offset) * tetherLength +
+      Math.cos(radians) * armLength +
       center.x
     )
     const y = (
-      Math.sin(time) * armLength +
-      Math.sin(time * ratio + offset) * tetherLength +
+      Math.sin(radians) * armLength +
       center.y
     )
+    return {x, y}
+  }
+
+  const ballPosition = (time, pattern) => {
+    const {
+      inspin,
+      ratio,
+      offset,
+      forward,
+    } = pattern
+    const hand = handPosition(time, pattern)
+    const ballRaidans = time * ratio + offset
+    return {
+      x: hand.x + (inspin ? 1 : -1) * Math.cos(ballRaidans) * tetherLength,
+      y: hand.y + Math.sin(ballRaidans) * tetherLength,
+    }
+  }
+
+  const drawSinglePosition = (time, pattern) => {
+    const {x, y} = ballPosition(time, pattern)
 
     ctx.beginPath()
     ctx.moveTo(x-.1, y-.1)
@@ -96,16 +119,43 @@ export default () => {
     ctx.stroke()
   }
 
-  const Renderer = ({leftPattern, rightPattern}) => {
-    let time = 0
-    let walltime = 0
-    const self = (ntime) => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+  const drawArm = (time, pattern) => {
+    const hand = handPosition(time, pattern)
 
-      if(walltime != 0) {
-        time += (ntime - walltime) * 0.001
-      }
-      walltime = ntime
+    ctx.beginPath()
+    ctx.moveTo(center.x, center.y)
+    ctx.lineWidth = armWidth
+    ctx.lineCap = "round"
+    ctx.lineTo(hand.x, hand.y)
+    ctx.stroke()
+  }
+
+  const drawHand = (time, pattern) => {
+    const hand = handPosition(time, pattern)
+
+    ctx.beginPath()
+    ctx.lineTo(hand.x - 0.1, hand.y - 0.1)
+    ctx.lineWidth = ballRadius * 2
+    ctx.lineCap = "round"
+    ctx.lineTo(hand.x + 0.1, hand.y + 0.1)
+    ctx.stroke()
+  }
+
+  const drawTether = (time, pattern) => {
+    const hand = handPosition(time, pattern)
+    const ball = ballPosition(time, pattern)
+
+    ctx.beginPath()
+    ctx.moveTo(hand.x, hand.y)
+    ctx.lineWidth = tetherWidth
+    ctx.lineCap = "round"
+    ctx.lineTo(ball.x, ball.y)
+    ctx.stroke()
+  }
+
+  const Renderer = ({leftPattern, rightPattern}) => {
+    const self = (time) => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       // Trails
       for (let i = 0; i < trailLength; i += 0.01) {
@@ -115,14 +165,23 @@ export default () => {
         drawSinglePosition(time - i, self.leftPattern)
         // Right arm
         ctx.strokeStyle = `rgba(0, 171, 158, ${opacity})`
-        drawSinglePosition(-(time - i), self.rightPattern)
+        drawSinglePosition(time - i, self.rightPattern)
       }
-  //     // Left arm
-  //     ctx.strokeStyle = 'rgb(255, 0, 255)'
-  //     drawSinglePosition(time, leftPattern)
-  //     // Right arm
-  //     ctx.strokeStyle = 'rgb(0, 255, 200)'
-  //     drawSinglePosition(-time, rightPattern)
+
+      // Arms
+      ctx.strokeStyle = `rgba(100, 100, 100, 1.0)`
+      drawArm(time, self.leftPattern)
+      drawArm(time, self.rightPattern)
+
+      // Tethers
+      ctx.strokeStyle = `rgba(150, 150, 150, 1.0)`
+      drawTether(time, self.leftPattern)
+      drawTether(time, self.rightPattern)
+
+      // Hands
+      ctx.strokeStyle = `rgba(100, 100, 100, 1.0)`
+      drawHand(time, self.leftPattern)
+      drawHand(time, self.rightPattern)
 
     }
     self.leftPattern = leftPattern
@@ -139,6 +198,7 @@ export default () => {
       position: 'bottom',
       boxPattern: true,
       offset: 0,
+      forward: true,
     }),
     rightPattern: flower({
       inspin: true,
@@ -148,48 +208,14 @@ export default () => {
       position: 'bottom',
       boxPattern: true,
       offset: 0,
+      forward: false,
     }),
   })
-
-  // const slider = document.getElementById("timeSlider")
-  // slider.addEventListener("input", () => {
-  //   renderer(slider.value * Math.PI * 2 / 100 / 0.001)
-  // })
-  //
-  // renderer(slider.value)
-  render = (t) => {
-    renderer(t)
-    window.requestAnimationFrame(render)
-  }
 
   const onResize = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     scale()
   }
-  window.addEventListener("resize", onResize)
-  window.addEventListener("orientationchange", onResize)
 
-  document.addEventListener("message", (event) => {
-    const state = JSON.parse(event.data)
-    renderer.leftPattern = flower({
-      inspin: !state.leftPattern.antispin,
-      petals: state.leftPattern.petals,
-      invert: false,
-      horizontal: false,
-      position: 'bottom',
-      boxPattern: true,
-      offset: 0,
-    })
-    renderer.rightPattern = flower({
-      inspin: !state.rightPattern.antispin,
-      petals: state.rightPattern.petals,
-      invert: true,
-      horizontal: false,
-      position: 'bottom',
-      boxPattern: true,
-      offset: state.splitTime ? 0 : Math.PI / 2,
-    })
-  })
-
-  window.requestAnimationFrame(render)
+  return {render: renderer, renderer, onResize}
 }

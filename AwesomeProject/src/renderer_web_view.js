@@ -6,6 +6,43 @@ import CanvasRenderer from './canvas_renderer'
 
 const debugHTML = false
 
+
+// TODO: figure out how to bring this back into the Android webview
+// export const webViewContent = {
+//   const canvas = document.getElementById("canvas")
+//
+//   const {onResize, renderer, render} = Renderer(canvas)
+//
+//   window.addEventListener("resize", onResize)
+//   window.addEventListener("orientationchange", onResize)
+//
+//   document.addEventListener("message", (event) => {
+//     const state = JSON.parse(event.data)
+//     renderer.leftPattern = flower({
+//       inspin: !state.leftPattern.antispin,
+//       petals: state.leftPattern.petals,
+//       forward: true,
+//       invert: false,
+//       horizontal: false,
+//       position: 'bottom',
+//       boxPattern: true,
+//       offset: 0,
+//     })
+//     renderer.rightPattern = flower({
+//       inspin: !state.rightPattern.antispin,
+//       petals: state.rightPattern.petals,
+//       forward: false,
+//       invert: true,
+//       horizontal: false,
+//       position: 'bottom',
+//       boxPattern: true,
+//       offset: state.splitTime ? 0 : Math.PI / 2,
+//     })
+//   })
+//
+//   window.requestAnimationFrame(render)
+// }
+
 const html = `
   <html debug="true">
     <head>
