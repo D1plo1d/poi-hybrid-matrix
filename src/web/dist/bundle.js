@@ -5013,12 +5013,12 @@ paused:false},_this.
 
 
 
-
 animate=function(){var time=arguments.length>0&&arguments[0]!==undefined?arguments[0]:Date.now();
+if(_this.nextFrame==null)return;
 var delta=time-(_this.previousFrameTime||time);
 _this.previousFrameTime=time;
 _this.setState({
-radians:((_this.state.radians||0)+delta*0.001)%(Math.PI*2)});
+radians:((_this.state.radians||0)+delta*0.0018)%(Math.PI*2)});
 
 _this.nextFrame=window.requestAnimationFrame(_this.animate);
 },_this.
@@ -5043,7 +5043,7 @@ togglePaused=function(){
 _this.setState({
 paused:!_this.state.paused});
 
-},_temp),_possibleConstructorReturn(_this,_ret);}_createClass(TimeSliderFlowDiagram,[{key:'componentWillMount',value:function componentWillMount(){this.startAnimation();}},{key:'componentWillReceiveProps',value:function componentWillReceiveProps(){this.startAnimation();}},{key:'componentWillUnmount',value:function componentWillUnmount(){this.stopAnimation();this.changeEventListeners('removeEventListener');}},{key:'startAnimation',value:function startAnimation(){if(this.nextFrame==null){this.previousFrameTime=null;this.nextFrame=window.requestAnimationFrame(this.animate);}}},{key:'stopAnimation',value:function stopAnimation(){if(this.nextFrame!=null){window.cancelAnimationFrame(this.nextFrame);}this.nextFrame=null;}},{key:'componentWillUpdate',value:function componentWillUpdate(nextProps,nextState){if(nextState.paused!==this.state.paused){if(nextState.paused){this.stopAnimation();}else{this.startAnimation();}}}},{key:'render',value:function render()
+},_temp),_possibleConstructorReturn(_this,_ret);}_createClass(TimeSliderFlowDiagram,[{key:'componentWillMount',value:function componentWillMount(){this.startAnimation();}},{key:'componentWillReceiveProps',value:function componentWillReceiveProps(){this.startAnimation();}},{key:'componentWillUnmount',value:function componentWillUnmount(){this.stopAnimation();}},{key:'startAnimation',value:function startAnimation(){if(this.nextFrame==null){this.previousFrameTime=null;this.nextFrame=window.requestAnimationFrame(this.animate);}}},{key:'stopAnimation',value:function stopAnimation(){if(this.nextFrame!=null){window.cancelAnimationFrame(this.nextFrame);}this.nextFrame=null;}},{key:'componentWillUpdate',value:function componentWillUpdate(nextProps,nextState){if(nextState.paused!==this.state.paused){if(nextState.paused){this.stopAnimation();}else{this.startAnimation();}}}},{key:'render',value:function render()
 
 {
 return(
@@ -5055,6 +5055,8 @@ this.props.style)},
 _react2.default.createElement(_flow_diagram2.default,{
 leftPattern:this.props.leftPattern,
 rightPattern:this.props.rightPattern,
+trailLength:Math.PI*3/2,
+trailResolution:0.01,
 radians:this.state.radians,
 style:{flexGrow:1}}),
 

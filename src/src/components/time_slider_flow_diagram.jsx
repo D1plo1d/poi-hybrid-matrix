@@ -19,7 +19,6 @@ export default class TimeSliderFlowDiagram extends React.Component {
 
   componentWillUnmount() {
      this.stopAnimation()
-     this.changeEventListeners('removeEventListener')
   }
 
   startAnimation() {
@@ -37,10 +36,11 @@ export default class TimeSliderFlowDiagram extends React.Component {
   }
 
   animate = (time = Date.now()) => {
+    if (this.nextFrame == null) return
     const delta = time - (this.previousFrameTime || time)
     this.previousFrameTime = time
     this.setState({
-      radians: ((this.state.radians||0) + delta * 0.001) % (Math.PI * 2),
+      radians: ((this.state.radians||0) + delta * 0.0018) % (Math.PI * 2),
     })
     this.nextFrame = window.requestAnimationFrame(this.animate)
   }
@@ -77,6 +77,8 @@ export default class TimeSliderFlowDiagram extends React.Component {
         <FlowDiagram
           leftPattern={this.props.leftPattern}
           rightPattern={this.props.rightPattern}
+          trailLength={Math.PI * 3 / 2}
+          trailResolution={0.01}
           radians={this.state.radians}
           style={{flexGrow: 1}}
         />
