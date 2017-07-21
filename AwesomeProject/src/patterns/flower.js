@@ -62,5 +62,18 @@ export default ({
     }
   }
 
-  return {handPosition, ballPosition}
+  return {
+    handPosition,
+    ballPosition,
+    params: {
+      inspin,
+      petals,
+      invert,
+      horizontal,
+      position,
+      boxPattern,
+      offset,
+      forward,
+    }
+  }
 }

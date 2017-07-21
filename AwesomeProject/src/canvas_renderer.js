@@ -26,8 +26,8 @@ export default ({
     measurements = {
       ballRadius,
       armLength,
-      armWidth: Math.max(2, minDimension * armWidthPercent / 100),
-      tetherWidth: Math.max(1, minDimension * tetherWidthPercent / 100),
+      armWidth: Math.max(4, minDimension * armWidthPercent / 100),
+      tetherWidth: Math.max(2, minDimension * tetherWidthPercent / 100),
       tetherLength: armLength,
       center: {
         x: width / 2,
@@ -107,7 +107,7 @@ export default ({
     for (let i = 0; i < trailLength; i += trailResolution) {
       const opacity = (
         decayLinearity > 0 ?
-          Math.pow((trailLength - i) * 0.6 / trailLength, decayLinearity)
+          Math.pow((trailLength - i) / trailLength, decayLinearity)
         : 1
       )
       // Left arm

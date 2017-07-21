@@ -13,14 +13,27 @@ export default class TimeSliderFlowDiagram extends React.Component {
     this.startAnimation()
   }
 
+  componentWillReceiveProps() {
+    this.startAnimation()
+  }
+
   componentWillUnmount() {
      this.stopAnimation()
      this.changeEventListeners('removeEventListener')
   }
 
   startAnimation() {
-    this.previousFrameTime = null
-    window.requestAnimationFrame(this.animate)
+    if (this.nextFrame == null) {
+      this.previousFrameTime = null
+      this.nextFrame = window.requestAnimationFrame(this.animate)
+    }
+  }
+
+  stopAnimation() {
+    if (this.nextFrame != null) {
+      window.cancelAnimationFrame(this.nextFrame)
+    }
+    this.nextFrame = null
   }
 
   animate = (time = Date.now()) => {
@@ -35,7 +48,7 @@ export default class TimeSliderFlowDiagram extends React.Component {
   componentWillUpdate(nextProps, nextState) {
     if (nextState.paused !== this.state.paused) {
       if (nextState.paused) {
-        window.cancelAnimationFrame(this.nextFrame)
+        this.stopAnimation()
       } else {
         this.startAnimation()
       }

@@ -1,5 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import {
+  HashRouter as Router,
+  Route,
+} from 'react-router-dom'
+
 import FlowDiagram from '../src/components/flow_diagram.jsx'
 import TimeSliderFlowDiagram from '../src/components/time_slider_flow_diagram.jsx'
 import Hybrid from '../src/components/hybrids/show.jsx'
@@ -31,9 +36,31 @@ const patterns = {
   }),
 }
 
+const HybridFromRouteParams = ({match}) => {
+  const json = JSON.parse(atob(match.params.id))
+  return (
+    <Hybrid
+      leftPattern={flower(json.leftPattern.params)}
+      rightPattern={flower(json.rightPattern.params)}
+    />
+  )
+}
+
 const App = () => (
-  <HybridIndex />
-  // <Hybrid {...patterns} />
+  <Router>
+    <div>
+      <Route
+        exact
+        path="/"
+        component={HybridIndex}
+      />
+      <Route
+        exact
+        path="/hybrids/:id"
+        component={HybridFromRouteParams}
+      />
+    </div>
+  </Router>
 
 )
 

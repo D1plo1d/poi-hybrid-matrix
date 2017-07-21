@@ -18,10 +18,12 @@
     "font-awesome-webpack": "^0.0.5-beta.2",
     "less": "^2.7.2",
     "lodash": "^4.17.4",
+    "radium": "^0.19.3",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-native": "0.40.0",
     "react-native-modal-picker": "mikaello/react-native-modal-picker#master",
+    "react-router-dom": "^4.1.2",
     "url-loader": "^0.5.8",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.4.1"

@@ -1,4 +1,5 @@
 import React from 'react'
+import _ from 'lodash'
 import canvasRenderer from '../canvas_renderer'
 
 export default class AnimatedFlowDiagram extends React.Component {
@@ -13,27 +14,33 @@ export default class AnimatedFlowDiagram extends React.Component {
   }
 
   componentDidMount() {
-    this.renderer = canvasRenderer({
-      canvas: this.refs.canvas,
-      leftPattern: this.props.leftPattern,
-      rightPattern: this.props.rightPattern,
-      trailLength: this.props.trailLength,
-      trailResolution: this.props.trailResolution,
-      decayLinearity: this.props.decayLinearity,
-      showArms: this.props.showArms,
-    })
-
+    this.createRenderer()
     this.drawFrame(this.props.radians)
-
-    this.changeEventListeners('addEventListener')
   }
 
   componentWillReceiveProps(nextProps) {
+    if (!_.isMatch(this.props, _.omit(nextProps, ['radians']))) {
+      this.createRenderer(nextProps)
+    }
     this.drawFrame(nextProps.radians)
   }
 
   componentWillUnmount() {
      this.changeEventListeners('removeEventListener')
+  }
+
+  createRenderer(props = this.props) {
+    this.renderer = canvasRenderer({
+      canvas: this.refs.canvas,
+      leftPattern: props.leftPattern,
+      rightPattern: props.rightPattern,
+      trailLength: props.trailLength,
+      trailResolution: props.trailResolution,
+      decayLinearity: props.decayLinearity,
+      showArms: props.showArms,
+    })
+
+    this.changeEventListeners('addEventListener')
   }
 
   changeEventListeners(action) {

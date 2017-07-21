@@ -1,8 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import Radium from 'radium'
 import FlowDiagram from '../flow_diagram.jsx'
 import TimeSliderFlowDiagram from '../time_slider_flow_diagram.jsx'
 import flower from '../../patterns/flower.js'
+import {
+  Link
+} from 'react-router-dom'
 
 const oneHandedPatterns = (overrides = {}) => {
   const patterns = []
@@ -35,10 +39,32 @@ const oneHandedPatterns = (overrides = {}) => {
 
 const patternCount = oneHandedPatterns().length
 const colWidth = `${100/(patternCount + 1)}vw`
-const cellStyle = {
+const baseStyle = {
   width: colWidth,
   height: colWidth,
-  marginBottom: 10,
+  marginBottom: 3,
+  marginTop: 3,
+}
+
+const headerStyle = {
+  outline: '3px solid transparent',
+  ...baseStyle,
+}
+
+const cellStyle = {
+  ...baseStyle,
+  ':hover': {
+  },
+}
+
+const cellNavLinkStyle = {
+  outline: '3px solid transparent',
+  width: colWidth,
+  height: colWidth,
+  cursor: 'pointer',
+  ':hover': {
+    opacity: 0.5,
+  },
 }
 
 const Header = ({ pattern }) => (
@@ -50,22 +76,33 @@ const Header = ({ pattern }) => (
     trailResolution={0.05}
     decayLinearity={0}
     showArms={false}
-    style={cellStyle}
+    style={headerStyle}
   />
 )
 
-const Cell = ({leftPattern, rightPattern}) => (
-  <FlowDiagram
-    leftPattern={leftPattern}
-    rightPattern={rightPattern}
-    radians={0}
-    trailLength={Math.PI * 2}
-    trailResolution={0.03}
-    decayLinearity={0}
-    showArms={false}
-    style={cellStyle}
-  />
-)
+const Cell = Radium(({leftPattern, rightPattern}) => (
+  <div
+    style={cellNavLinkStyle}
+  >
+    <Link
+      to={`/hybrids/${btoa(JSON.stringify({
+        leftPattern: {pattern: 'flower', params: leftPattern.params},
+        rightPattern: {pattern: 'flower', params: rightPattern.params}
+      }))}`}
+    >
+      <FlowDiagram
+        leftPattern={leftPattern}
+        rightPattern={rightPattern}
+        radians={0}
+        trailLength={Math.PI * 2}
+        trailResolution={0.03}
+        decayLinearity={0}
+        showArms={false}
+        style={cellStyle}
+      />
+    </Link>
+  </div>
+))
 
 export default () => (
   <div
@@ -85,7 +122,7 @@ export default () => (
           marginBottom: 10,
         }}
       >
-        {patternCount * (patternCount - 1) / 2} Shape Hybrid Matrix
+        {patternCount * (patternCount - 1) / 2} Interactive Poi Hybrid Matrix
       </header>
       { /* Headers */ }
       <div
